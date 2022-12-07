@@ -1,5 +1,4 @@
-const btn = document.querySelector('button')
-const choices = ['Rock','Paper','Scissors']
+const choices = ['rock','paper','scissors']
 
 function getComputerChoice(){
     const selected = choices[Math.floor(Math.random()*choices.length)]
@@ -7,21 +6,55 @@ function getComputerChoice(){
 }
 
 function playRound(userSelection, computerSelection){
-
+    const userSelectionToLower = userSelection.toLowerCase()
     const userWinMsg = `Win! ${userSelection} beats ${computerSelection}`
-    if (userSelection == computerSelection){
-        return `Draw! Both selected ${computerSelection}`
-    }else if (userSelection == 'Rock' && computerSelection == 'Scissors'){
-        return userWinMsg  
-    }else if (userSelection == 'Scissors' && computerSelection == 'Paper'){
-        return userWinMsg
-    }else if (userSelection == 'Paper' && computerSelection == 'Scissors'){
-        return userWinMsg
+    let result;
+
+    if (userSelectionToLower == computerSelection){
+        result = [`Draw! Both selected ${computerSelection}`, 'draw']
+    }else if (userSelectionToLower == 'rock' && computerSelection == 'scissors'){
+        result = [userWinMsg, 'win']  
+    }else if (userSelectionToLower == 'scissors' && computerSelection == 'paper'){
+        result = [userWinMsg, 'win']  
+    }else if (userSelectionToLower == 'paper' && computerSelection == 'rock'){
+        result = [userWinMsg, 'win']  
     }else{
-        return `Lost! ${userSelection} lost to ${computerSelection}`
+        result = [`Lost! ${userSelectionToLower} lost to ${computerSelection}`, 'lose']
     }
 
+    return result
 }
 
-userSelect = 'PAPER'
-console.log(playRound(userSelect.toLowerCase(), getComputerChoice().toLowerCase()))
+function game(){
+    let userCounter = 0;
+    let computerCounter = 0;
+
+    for (let i=0; i<5; i++){
+        const userSelect = prompt('Enter selection')
+
+        if (userSelect === null){
+            return;
+        }
+        
+        const round = playRound(userSelect, getComputerChoice())
+        if (round[1] == 'win'){
+            userCounter++
+        }else if (round[1] == 'lose'){
+            computerCounter++
+        }
+        console.log(round[0])
+        console.log(`User: ${userCounter} Computer: ${computerCounter}`)
+    }
+
+    console.log(`Game Over!`)
+    console.log(`Final Score ==> User:${userCounter} Computer:${computerCounter}`)
+    if (userCounter > computerCounter){
+        console.log('User wins!')
+    }else if (userCounter < computerCounter){
+        console.log('Computer wins!')
+    }else{
+        console.log('The game ended with a tie!')
+    }
+}
+
+game()
