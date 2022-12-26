@@ -1,4 +1,15 @@
+let userCounter = 0;
+let computerCounter = 0;
+
+const btns = document.querySelectorAll('button')
+
+const textContent = document.querySelector('#text-content')
+const pregameText = document.querySelector('#pregame-text')
+
 const choices = ['rock','paper','scissors']
+
+const msg = document.createElement('p')
+const score = document.createElement('p')
 
 function getComputerChoice(){
     const selected = choices[Math.floor(Math.random()*choices.length)]
@@ -6,55 +17,83 @@ function getComputerChoice(){
 }
 
 function playRound(userSelection, computerSelection){
-    const userSelectionToLower = userSelection.toLowerCase()
+
+    if (pregameText){
+        pregameText.remove()
+    }
     const userWinMsg = `Win! ${userSelection} beats ${computerSelection}`
-    let result;
 
-    if (userSelectionToLower == computerSelection){
-        result = [`Draw! Both selected ${computerSelection}`, 'draw']
-    }else if (userSelectionToLower == 'rock' && computerSelection == 'scissors'){
-        result = [userWinMsg, 'win']  
-    }else if (userSelectionToLower == 'scissors' && computerSelection == 'paper'){
-        result = [userWinMsg, 'win']  
-    }else if (userSelectionToLower == 'paper' && computerSelection == 'rock'){
-        result = [userWinMsg, 'win']  
+    if (userSelection == computerSelection){
+        msg.textContent = `Draw! Both selected ${computerSelection}`
+    }else if (userSelection == 'rock' && computerSelection == 'scissors'){
+        msg.textContent = userWinMsg
+        userCounter++
+    }else if (userSelection == 'scissors' && computerSelection == 'paper'){
+        msg.textContent = userWinMsg
+        userCounter++
+    }else if (userSelection == 'paper' && computerSelection == 'rock'){
+        msg.textContent = userWinMsg
+        userCounter++
     }else{
-        result = [`Lost! ${userSelectionToLower} lost to ${computerSelection}`, 'lose']
+        msg.textContent = `Lost! ${userSelection} lost to ${computerSelection}`
+        computerCounter++
     }
 
-    return result
+    textContent.appendChild(msg)
 }
 
-function game(){
-    let userCounter = 0;
-    let computerCounter = 0;
+function showScore(){
+    score.textContent = `User: ${userCounter} Computer: ${computerCounter}`
 
-    for (let i=0; i<5; i++){
-        const userSelect = prompt('Enter selection')
+    textContent.appendChild(score)
+}
 
-        if (userSelect === null){
-            return;
-        }
-        
-        const round = playRound(userSelect, getComputerChoice())
-        if (round[1] == 'win'){
-            userCounter++
-        }else if (round[1] == 'lose'){
-            computerCounter++
-        }
-        console.log(round[0])
-        console.log(`User: ${userCounter} Computer: ${computerCounter}`)
+function checkWinner(userCounter, computerCounter){
+    const p = document.createElement('p')
+    if (userCounter === 5){
+        p.textContent = 'User Wins'
+        p.style.color = 'green'
+    }else if (computerCounter === 5){
+        p.textContent = 'Computer Wins'
+        p.style.color = 'red'
     }
 
-    console.log(`Game Over!`)
-    console.log(`Final Score ==> User:${userCounter} Computer:${computerCounter}`)
-    if (userCounter > computerCounter){
-        console.log('User wins!')
-    }else if (userCounter < computerCounter){
-        console.log('Computer wins!')
-    }else{
-        console.log('The game ended with a tie!')
+    textContent.appendChild(p)
+
+    if (userCounter === 5 || computerCounter === 5){
+        btns.forEach(btn=>{
+            btn.disabled = true
+        })
+
+        const restartBtn = document.createElement('button')
+        restartBtn.setAttribute('data-btn','restart-btn')
+        restartBtn.textContent = 'Restart Game!'
+        textContent.appendChild(restartBtn)
+
+        restartBtn.addEventListener('click', ()=>{
+            restartGame()
+        })
+
     }
 }
 
-game()
+function restartGame(){
+    userCounter = 0;
+    computerCounter = 0;
+    btns.forEach(btn=>{
+        btn.disabled = false
+    })
+    while (textContent.firstChild){
+        textContent.removeChild(textContent.firstChild)
+    }
+    textContent.appendChild(pregameText)
+}
+
+btns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+        playRound(btn.id, getComputerChoice())
+        showScore()
+        checkWinner(userCounter, computerCounter)
+    })
+})
+
